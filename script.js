@@ -60,16 +60,16 @@ document.addEventListener('DOMContentLoaded', function() {
         observer.observe(card);
     });
 
-    // Observe environment cards
-    document.querySelectorAll('.environment-card').forEach(card => {
-        card.style.opacity = '0';
-        card.style.transform = 'translateY(30px)';
-        card.style.transition = 'all 0.6s ease-out';
-        observer.observe(card);
-    });
-
     // Observe gameplay steps
     document.querySelectorAll('.gameplay-step').forEach((step, index) => {
+        step.style.opacity = '0';
+        step.style.transform = 'translateY(30px)';
+        step.style.transition = `all 0.6s ease-out ${index * 0.1}s`;
+        observer.observe(step);
+    });
+
+    // Observe download steps
+    document.querySelectorAll('.download-step').forEach((step, index) => {
         step.style.opacity = '0';
         step.style.transform = 'translateY(30px)';
         step.style.transition = `all 0.6s ease-out ${index * 0.1}s`;
@@ -94,11 +94,12 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Add click effect to platform buttons
-    document.querySelectorAll('.platform-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
+    // Add click effect to download button
+    const downloadBtn = document.querySelector('.download-button');
+    if (downloadBtn) {
+        downloadBtn.addEventListener('click', (e) => {
             // Check if it's a placeholder link
-            if (btn.getAttribute('href') === '#') {
+            if (downloadBtn.getAttribute('href') === '#') {
                 e.preventDefault();
                 
                 // Create ripple effect
@@ -112,16 +113,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 ripple.style.left = e.offsetX + 'px';
                 ripple.style.top = e.offsetY + 'px';
                 
-                btn.style.position = 'relative';
-                btn.appendChild(ripple);
+                downloadBtn.style.position = 'relative';
+                downloadBtn.appendChild(ripple);
                 
                 setTimeout(() => ripple.remove(), 600);
                 
                 // Show alert for demo purposes
-                alert('Add your download link here! This is a placeholder.');
+                alert('Add your download link here! Replace href="#" with your actual game file URL.');
             }
         });
-    });
+    }
 
     // Add ripple animation to CSS dynamically
     if (!document.querySelector('#ripple-animation')) {
@@ -139,52 +140,6 @@ document.addEventListener('DOMContentLoaded', function() {
         `;
         document.head.appendChild(style);
     }
-
-    // Counter animation for scoring system
-    const scoreItems = document.querySelectorAll('.score-value');
-    
-    const animateCounter = (element) => {
-        const text = element.textContent;
-        const hasMultiplier = text.includes('x multiplier');
-        
-        if (!hasMultiplier && text.includes('pts')) {
-            const number = parseInt(text);
-            let current = 0;
-            const increment = number / 30;
-            const timer = setInterval(() => {
-                current += increment;
-                if (current >= number) {
-                    current = number;
-                    clearInterval(timer);
-                }
-                element.textContent = Math.floor(current) + ' pts';
-            }, 30);
-        }
-    };
-
-    // Observe score items
-    scoreItems.forEach(item => {
-        const scoreObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    animateCounter(entry.target);
-                    scoreObserver.unobserve(entry.target);
-                }
-            });
-        }, { threshold: 0.5 });
-        
-        scoreObserver.observe(item);
-    });
-
-    // Add parallax effect to environment images
-    window.addEventListener('scroll', () => {
-        const scrolled = window.pageYOffset;
-        document.querySelectorAll('.environment-image').forEach((img, index) => {
-            const speed = 0.5;
-            const yPos = -(scrolled * speed);
-            img.style.transform = `translateY(${yPos}px)`;
-        });
-    });
 
     // Easter egg: Konami code
     let konamiCode = [];
